@@ -22,6 +22,10 @@ final class PrimeEndpoints[F[_]: Defer: Applicative, A](service: PrimeService[F,
       if (i < 1) BadRequest(s"Number $i must be 1 or higher")
       else Ok(streamBool(i))
 
+    case GET -> Root / "primepar" / IntVar(i) =>
+      if (i < 1) BadRequest(s"Number $i must be 1 or higher")
+      else Ok(streamPar(i))
+
   }
 
 
@@ -39,4 +43,12 @@ final class PrimeEndpoints[F[_]: Defer: Applicative, A](service: PrimeService[F,
       .map(_.toString)
       .intersperse("\n")
       .through(text.utf8Encode)
+
+  def streamPar(i: Int): Stream[F, Byte] =
+    service
+      .calculatePrimePar(i, 3)
+      .map(_.toString)
+      .intersperse("\n")
+      .through(text.utf8Encode)
+
 }

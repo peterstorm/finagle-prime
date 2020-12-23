@@ -8,9 +8,9 @@ import org.http4s.HttpApp
 import org.http4s.HttpRoutes
 import org.http4s.implicits._
 import cats.Applicative
-import cats.Defer
+import cats.effect.Concurrent
 
-class Module[F[_]: Applicative: Defer, A] {
+class Module[F[_]: Applicative: Concurrent, A] {
 
   private val noMicroService: PrimeAlgebra[F, Int] = new NoMicroserviceInterpreter()
 
