@@ -3,7 +3,8 @@ lazy val Fs2Version        = "2.4.6"
 lazy val Http4sVersion     = "0.21.8"
 lazy val Log4CatsVersion   = "1.1.1"
 lazy val FinalgeVersion    = "20.3.0"
-lazy val CirceVersion      = "0.13.0" 
+lazy val CirceVersion      = "0.13.0"
+lazy val LogbackVersion    = "1.2.3" 
 lazy val KindProjectorVersion = "0.11.0"
 
 lazy val root = (project in file("."))
@@ -24,6 +25,7 @@ lazy val root = (project in file("."))
       "com.twitter"       %% "scrooge-core"        % FinalgeVersion,
       "com.twitter"       %% "finagle-core"        % FinalgeVersion,
       "com.twitter"       %% "finagle-thrift"      % FinalgeVersion,
+      "ch.qos.logback"    %  "logback-classic"     % LogbackVersion,
       "org.apache.thrift" % "libthrift"            % "0.10.0"
     )
   )

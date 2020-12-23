@@ -9,6 +9,7 @@ import org.http4s.HttpRoutes
 import org.http4s.implicits._
 import cats.Applicative
 import cats.effect.Concurrent
+import org.http4s.server.Router
 
 class Module[F[_]: Applicative: Concurrent, A] {
 
@@ -16,9 +17,9 @@ class Module[F[_]: Applicative: Concurrent, A] {
 
   private val primeService: PrimeService[F, Int] = new PrimeService(noMicroService)
 
-  private val endpoints: HttpRoutes[F] = new PrimeEndpoints(primeService).endpoints
+  private val endpoints: HttpRoutes[F] = new PrimeEndpoints(primeService).endpointsNoMS
 
-  val httpApp: HttpApp[F] = endpoints.orNotFound
+  val httpApp: HttpApp[F] = Router("/api/v1/" -> endpoints).orNotFound
 
 }
 

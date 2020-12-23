@@ -2,30 +2,32 @@ package finagleprime.endpoints
 
 import org.http4s._
 import org.http4s.dsl._
-import org.http4s.circe._
 import org.http4s.headers._
 import fs2._
-import finagleprime.services.PrimeService
 import cats.implicits._
 import cats.Applicative
-import cats.Defer
+import cats.effect.Concurrent
+import finagleprime.services.PrimeService
 
-final class PrimeEndpoints[F[_]: Defer: Applicative, A](service: PrimeService[F, A]) extends Http4sDsl[F] {
+final class PrimeEndpoints[F[_]: Concurrent, A](service: PrimeService[F, A]) extends Http4sDsl[F] {
 
-  val endpoints: HttpRoutes[F] = HttpRoutes.of[F] {
+  val endpointsNoMS: HttpRoutes[F] = HttpRoutes.of[F] {
 
     case GET -> Root / "prime" / IntVar(i) =>
-      if (i < 1) BadRequest(s"Number $i must be 1 or higher")
+      if (i < 1) BadRequest(s"Argument $i must be 1 or higher")
       else Ok(stream(i))
 
     case GET -> Root / "primebool" / IntVar(i) =>
-      if (i < 1) BadRequest(s"Number $i must be 1 or higher")
+      if (i < 1) BadRequest(s"Argument $i must be 1 or higher")
       else Ok(streamBool(i))
 
     case GET -> Root / "primepar" / IntVar(i) =>
-      if (i < 1) BadRequest(s"Number $i must be 1 or higher")
+      if (i < 1) BadRequest(s"Argument $i must be 1 or higher")
       else Ok(streamPar(i))
 
+    case GET -> Root / "primepar2" / IntVar(i) =>
+      if (i < 1) BadRequest(s"Argument $i must be 1 or higher")
+      else Ok(streamPar2(i))
   }
 
 
@@ -46,9 +48,17 @@ final class PrimeEndpoints[F[_]: Defer: Applicative, A](service: PrimeService[F,
 
   def streamPar(i: Int): Stream[F, Byte] =
     service
-      .calculatePrimePar(i, 3)
+      .calculatePrimePar(i, 20)
       .map(_.toString)
       .intersperse("\n")
       .through(text.utf8Encode)
+
+  def streamPar2(i: Int): Stream[F, Byte] =
+    service
+      .calculatePrimePar2(i, 3)
+      .map(_.toString)
+      .intersperse("\n")
+      .through(text.utf8Encode)
+
 
 }
