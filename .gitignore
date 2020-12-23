@@ -11,7 +11,7 @@ target/
 build/
 *.csv
 *.xlsx
-
+*.DS_Store
 # IDE specific
 .cache
 .classpath
