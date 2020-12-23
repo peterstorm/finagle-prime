@@ -1,0 +1,31 @@
+# Fundamental to the build
+lib/
+logs/
+Properties*
+target/
+/scalalib/fetchedSources/
+/partest/fetchedSources/
+/linker-interface/**/scalajs-logging-src/
+/linker-interface/**/scalajs-logging-src-jars/
+/node_modules/
+build/
+*.csv
+*.xlsx
+
+# IDE specific
+.cache
+.classpath
+.bsp
+.bloop
+.project
+.settings/
+/.idea/
+/.idea_modules/
+bin/
+/.bloop/
+/.metals/
+/project/**/metals.sbt
+/.vscode/
+hs_err*
+replay_pid*
+
