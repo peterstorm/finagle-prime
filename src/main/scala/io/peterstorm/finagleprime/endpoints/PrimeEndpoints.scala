@@ -21,6 +21,10 @@ final class PrimeEndpoints[F[_]: Concurrent, A](service: PrimeService[F, A]) ext
       if (i < 1) BadRequest(s"Argument $i must be 1 or higher")
       else Ok(streamBool(i))
 
+    case GET -> Root / "primelist" / IntVar(i) =>
+      if (i < 1) BadRequest(s"Argument $i must be 1 or higher")
+      else Ok(streamList(i))
+
     case GET -> Root / "primepar" / IntVar(i) =>
       if (i < 1) BadRequest(s"Argument $i must be 1 or higher")
       else Ok(streamPar(i))
@@ -28,6 +32,18 @@ final class PrimeEndpoints[F[_]: Concurrent, A](service: PrimeService[F, A]) ext
     case GET -> Root / "primepar2" / IntVar(i) =>
       if (i < 1) BadRequest(s"Argument $i must be 1 or higher")
       else Ok(streamPar2(i))
+  }
+
+  val endpointsThriftNaive: HttpRoutes[F] = HttpRoutes.of[F] {
+
+    case GET -> Root / "primethrift" / IntVar(i) =>
+      if (i < 1) BadRequest(s"Argument $i must be 1 or higher")
+      else Ok(streamBool(i))
+
+    case GET -> Root / "primethriftlist" / IntVar(i) =>
+      if (i < 1) BadRequest(s"Argument $i must be 1 or higher")
+      else Ok(streamList(i))
+
   }
 
 
@@ -42,6 +58,12 @@ final class PrimeEndpoints[F[_]: Concurrent, A](service: PrimeService[F, A]) ext
   def streamBool(i: Int): Stream[F, Byte] =
     service
       .calculatePrimeBool(i)
+      .map(_.toString)
+      .intersperse("\n")
+      .through(text.utf8Encode)
+
+  def streamList(i: Int): Stream[F, Byte] =
+    service.calculatePrimeList(i)
       .map(_.toString)
       .intersperse("\n")
       .through(text.utf8Encode)

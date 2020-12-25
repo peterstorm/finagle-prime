@@ -18,6 +18,9 @@ class PrimeService[F[_]: Concurrent, A](algebra: PrimeAlgebra[F, A]) {
     Stream.range(0, i + 1)
       .evalFilter(algebra.calculateIsPrime(_))
 
+  def calculatePrimeList(i: Int): Stream[F, Int] =
+    Stream.evals(algebra.calculatePrimes(i))
+
   def calculatePrimePar(i: Int, numShards: Int): Stream[F, Int] =
     Stream.range(0, i + 1).covary[F].evalFilterAsync(100)(n => algebra.calculateIsPrime(n))
 

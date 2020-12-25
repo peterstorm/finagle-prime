@@ -13,7 +13,8 @@ object Main extends IOApp {
 
   private val program: Stream[IO, Unit] =
     for {
-      server <- Stream.resource(Server.create(ctx.httpApp))
+      _ <- Stream.resource(Server.create(ctx.httpApp))
+      _ <- Stream.eval(ctx.thriftServer)
       _ <- Stream.eval(IO(println("Server started")))
       _ <- Stream.never[IO].covaryOutput[Unit]
     } yield ()

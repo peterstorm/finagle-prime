@@ -16,6 +16,12 @@ class NoMicroserviceInterpreter[F[_]: Applicative] extends PrimeAlgebra[F, scala
     else Applicative[F].pure(false)
   }
 
+  def calculatePrimes(int: scala.Int): F[List[Int]] = {
+    List.range(0, int + 1)
+      .filter(isPrime(_))
+      .pure[F]
+  }
+
   def isPrime(i: scala.Int): Boolean = {
     if (i <= 1) false
     else if (i == 2) true

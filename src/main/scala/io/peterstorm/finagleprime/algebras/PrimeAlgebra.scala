@@ -6,4 +6,6 @@ trait PrimeAlgebra[F[_], A] {
 
   def calculateIsPrime(int: Int): F[Boolean]
 
+  def calculatePrimes(int: Int): F[List[Int]]
+
 }
