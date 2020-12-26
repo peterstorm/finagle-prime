@@ -7,9 +7,12 @@ import finagleprime.delivery.Server
 import finagleprime.endpoints.PrimeEndpoints
 import finagleprime.services.PrimeService
 import finagleprime.interpreters.NoMicroserviceInterpreter
+import finagleprime.effects.ThriftClientBuilder
+import com.twitter.finagle.Thrift
+import finagleprime.thrift.ThriftPrimeService
 
 object Main extends IOApp {
-  val ctx = new Module[IO, Int]
+  val ctx = new Module[IO]
 
   private val program: Stream[IO, Unit] =
     for {

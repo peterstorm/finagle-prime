@@ -46,6 +46,18 @@ final class PrimeEndpoints[F[_]: Concurrent, A](service: PrimeService[F, A]) ext
 
   }
 
+ val endpointsThriftFunctional: HttpRoutes[F] = HttpRoutes.of[F] {
+
+    case GET -> Root / "primethriftfunctional" / IntVar(i) =>
+      if (i < 1) BadRequest(s"Argument $i must be 1 or higher")
+      else Ok(streamBool(i))
+
+    case GET -> Root / "primethriftlistfunctional" / IntVar(i) =>
+      if (i < 1) BadRequest(s"Argument $i must be 1 or higher")
+      else Ok(streamList(i))
+
+  }
+
 
   def stream(i: Int): Stream[F, Byte] =
     service

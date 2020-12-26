@@ -15,5 +15,4 @@ object Server {
         .bindHttp(3004, "0.0.0.0")
         .withHttpApp(app)
         .resource
-
 }

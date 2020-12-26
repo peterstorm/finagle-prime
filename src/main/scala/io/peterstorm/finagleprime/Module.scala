@@ -16,22 +16,24 @@ import cats.effect.Resource
 import com.twitter.finagle.Thrift
 import finagleprime.thrift._
 import com.twitter.util.Future
+import finagleprime.interpreters.ThriftMicroServiceInterpreter
+import cats.effect.ContextShift
 
-class Module[F[_]: Applicative: Concurrent, A] {
+class Module[F[_]: Applicative: Concurrent: ContextShift] {
 
-  private val noMicroService: PrimeAlgebra[F, Int] = new NoMicroserviceInterpreter
+  private val primeServiceNoMS: PrimeService[F, Int] = new PrimeService(new NoMicroserviceInterpreter)
 
-  private val thriftMicroServiceNaive: PrimeAlgebra[F, Int] = new ThriftMicroServiceInterpreterNaive
+  private val primeServiceThriftNaive: PrimeService[F, Int] = new PrimeService(new ThriftMicroServiceInterpreterNaive)
 
-  private val primeServiceNoMS: PrimeService[F, Int] = new PrimeService(noMicroService)
-
-  private val primeServiceThriftNaive: PrimeService[F, Int] = new PrimeService(thriftMicroServiceNaive)
+  private val primeServiceThrift: PrimeService[F, Int] = new PrimeService(new ThriftMicroServiceInterpreter)
 
   private val endpointsNoMs: HttpRoutes[F] = new PrimeEndpoints(primeServiceNoMS).endpointsNoMS
 
   private val endpointsThriftNaive: HttpRoutes[F] = new PrimeEndpoints(primeServiceThriftNaive).endpointsThriftNaive
 
-  private val endpoints = endpointsNoMs <+> endpointsThriftNaive
+  private val endpointsThriftFunctional: HttpRoutes[F] = new PrimeEndpoints(primeServiceThriftNaive).endpointsThriftFunctional
+
+  private val endpoints = endpointsNoMs <+> endpointsThriftNaive <+> endpointsThriftFunctional
 
   val thriftServer = 
     Concurrent[F].delay {
