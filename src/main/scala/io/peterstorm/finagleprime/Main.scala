@@ -6,6 +6,7 @@ import fs2.Stream
 import finagleprime.delivery.Server
 import finagleprime.endpoints.PrimeEndpoints
 import finagleprime.services.PrimeService
+import com.olegpy.meow.hierarchy._
 import finagleprime.interpreters.NoMicroserviceInterpreter
 import finagleprime.effects.ThriftClientBuilder
 import com.twitter.finagle.Thrift

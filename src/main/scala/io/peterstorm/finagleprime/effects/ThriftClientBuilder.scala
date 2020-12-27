@@ -17,12 +17,12 @@ import com.twitter.finagle.thrift.ThriftClientRequest
 
 object ThriftClientBuilder {
 
-  def apply[F[_]: Sync: Async: ContextShift](client: Client) =
+  def apply[F[_]: Sync: Async](client: Client) =
     new ThriftClientBuilder[F](Sync[F].delay(client))
 
 }
 
-final private[finagleprime] case class ThriftClientBuilder[F[_]: Sync: Async: ContextShift](
+final private[finagleprime] case class ThriftClientBuilder[F[_]: Sync: Async](
   private val client: F[Client],
   )(implicit NT: NaturalTransformation[Future, F]){
 
@@ -46,11 +46,14 @@ final private[finagleprime] case class ThriftClientBuilder[F[_]: Sync: Async: Co
     def filtered(filter: Filter[ThriftClientRequest, Array[Byte], ThriftClientRequest, Array[Byte]]): ThriftClientBuilder[F] =
       copy(client = client.map(_.filtered(filter)))
 
-    def build[Srv <: ToClosable: ClassTag](destination: String): Resource[F, Srv] =
-      makeResource(client.map(_.build[Srv](destination)))
+    def build[Srv <: ToClosable: ClassTag](destination: String, label: String): F[Srv] =
+      client.map(_.build[Srv](destination, label))
+
+    def resource[Srv <: ToClosable: ClassTag](destination: String, label: String): Resource[F, Srv] =
+      makeResource(client.map(_.build[Srv](destination, label)))
 
     private def makeResource[Srv <: ToClosable: ClassTag](service: F[Srv]): Resource[F, Srv] =
-      Resource.make(service)(service => NT(service.asClosable.close()))
+      Resource.make(service)(service => NT(service.asClosable.close(Duration(1, TimeUnit.SECONDS))))
 
 }
 
