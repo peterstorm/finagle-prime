@@ -48,7 +48,37 @@ final class PrimeEndpoints[F[_]: Concurrent: Sync, A](service: PrimeService[F, A
     case GET -> Root / "primethriftlistfunctional" / IntVar(i) =>
       Ok(streamList(i))
 
+    case GET -> Root / "primethriftparfunctional" / IntVar(i) =>
+      Ok(streamPar(i))
+
+    case GET -> Root / "primethriftpar2functional" / IntVar(i) =>
+      Ok(streamPar2(i))
+
+    case GET -> Root / "test" =>
+      Ok(service.test)
+
+    case GET -> Root / "test2" / IntVar(i) =>
+      Ok(service.test2(i))
+
+    case GET -> Root / "test3" / IntVar(i) =>
+      Ok(streamTest3(i))
+
+    case GET -> Root / "primefirst" / IntVar(i) =>
+      Ok(streamFirst(i))
   }
+
+  def streamTest3(i: Int): Stream[F, Byte] =
+    Stream
+      .evals(service.test3(i))
+      .map(_.toString)
+      .intersperse("\n")
+      .through(text.utf8Encode)
+
+  def streamFirst(i: Int): Stream[F, Byte] =
+    service
+      .calculateFirstPrime(i)
+      .map(_.toString)
+      .through(text.utf8Encode)
 
   def stream(i: Int): Stream[F, Byte] =
     service
@@ -59,8 +89,7 @@ final class PrimeEndpoints[F[_]: Concurrent: Sync, A](service: PrimeService[F, A
       .through(text.utf8Encode)
 
   def streamBool(i: Int): Stream[F, Byte] =
-    service
-      .calculatePrimeBool(i)
+    service.calculatePrimeBool(i)
       .map(_.toString)
       .intersperse("\n")
       .through(text.utf8Encode)

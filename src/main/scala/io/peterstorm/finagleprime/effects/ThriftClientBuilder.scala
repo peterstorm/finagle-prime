@@ -53,7 +53,7 @@ final private[finagleprime] case class ThriftClientBuilder[F[_]: Sync: Async](
       makeResource(client.map(_.build[Srv](destination, label)))
 
     private def makeResource[Srv <: ToClosable: ClassTag](service: F[Srv]): Resource[F, Srv] =
-      Resource.make(service)(service => NT(service.asClosable.close(Duration(1, TimeUnit.SECONDS))))
+      Resource.make(service)(service => Sync[F].delay(NT(service.asClosable.close(Duration(1, TimeUnit.SECONDS)))))
 
 }
 

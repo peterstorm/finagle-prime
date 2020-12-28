@@ -22,6 +22,7 @@ import cats.effect.ContextShift
 import finagleprime.domain.Errors._
 import finagleprime.effects.HttpErrorHandler
 import finagleprime.effects.PrimeHttpErrorHandler
+import finagleprime.effects.PrimeHttpErrorHandler1
 
 class Module[F[_]: Applicative: Concurrent: Sync] {
 
@@ -38,6 +39,9 @@ class Module[F[_]: Applicative: Concurrent: Sync] {
   private val endpointsThriftFunctional: HttpRoutes[F] = new PrimeEndpoints(primeServiceThrift).endpointsThriftFunctional
 
   private val endpoints = endpointsNoMs <+> endpointsThriftNaive <+> endpointsThriftFunctional
+
+  def routeHandler1(implicit RH: HttpErrorHandler[F, Exception]): HttpRoutes[F] =
+    RH.handle(endpoints)
 
   def routeHandler(implicit RH: HttpErrorHandler[F, PrimeError]): HttpRoutes[F] =
     RH.handle(endpoints)
