@@ -4,7 +4,8 @@ import org.http4s._
 import cats.{ApplicativeError, MonadError}
 import cats.data.{Kleisli, OptionT}
 import org.http4s.dsl.Http4sDsl
-import fs2._
+import cats.syntax.all._
+import cats.implicits._
 
 import finagleprime.domain.Errors._
 
@@ -33,6 +34,7 @@ abstract class RouteErrorHandler[F[_], E <: Throwable] extends HttpErrorHandler[
     }
 }
 
+
 object PrimeHttpErrorHandler {
 
   def apply[F[_]: MonadError[*[_], PrimeError]]: HttpErrorHandler[F, PrimeError] =
@@ -43,20 +45,6 @@ object PrimeHttpErrorHandler {
       val handler: PrimeError => F[Response[F]] = {
         case InvalidArgument(arg) => BadRequest(s"Invalid argument: $arg Must be 1 or more")
         case UnknownPrimeError(msg)    => BadRequest(s"Unknown error: $msg")
-      }
-
-    }
-}
-
-object PrimeHttpErrorHandler1 {
-
-  def apply[F[_]: MonadError[*[_], Exception]]: HttpErrorHandler[F, Exception] =
-    new RouteErrorHandler[F, Exception] {
-      
-      val AE = implicitly
-
-      val handler: Exception => F[Response[F]] = {
-        case _: RuntimeException => BadRequest(s"Invalid argument must be 1 or more")
       }
 
     }

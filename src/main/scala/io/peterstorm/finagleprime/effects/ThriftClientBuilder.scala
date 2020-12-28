@@ -31,8 +31,7 @@ final private[finagleprime] case class ThriftClientBuilder[F[_]: Sync: Async](
       }
 
     def withRetryBackoff(start: Long, maximum: Long): ThriftClientBuilder[F] =
-      copy(client = client
-        .map(_.withRetryBackoff(
+      copy(client = client.map(_.withRetryBackoff(
           Backoff.decorrelatedJittered(
             Duration(start, TimeUnit.SECONDS), Duration(maximum, TimeUnit.SECONDS))))
         )
@@ -56,5 +55,3 @@ final private[finagleprime] case class ThriftClientBuilder[F[_]: Sync: Async](
       Resource.make(service)(service => Sync[F].delay(NT(service.asClosable.close(Duration(1, TimeUnit.SECONDS)))))
 
 }
-
-

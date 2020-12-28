@@ -1,7 +1,7 @@
 package finagleprime.effects
 
 import com.twitter.util.{Throw, Future, Return}
-import cats.effect.{Async, ContextShift, IO}
+import cats.effect.{Async}
 import cats.~>
 
 trait NaturalTransformation[F[_], G[_]] extends ~>[F, G]

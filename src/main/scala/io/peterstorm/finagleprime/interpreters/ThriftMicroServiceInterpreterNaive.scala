@@ -1,11 +1,12 @@
 package finagleprime.interpreters
 
-import finagleprime.thrift._
-import finagleprime.algebras.PrimeAlgebra
 import com.twitter.finagle.Thrift
 import com.twitter.util.Duration._
 import com.twitter.util.Await
 import cats.Applicative
+
+import finagleprime.thrift._
+import finagleprime.algebras.PrimeAlgebra
 
 class ThriftMicroServiceInterpreterNaive[F[_]: Applicative] extends PrimeAlgebra[F, scala.Int] {
 

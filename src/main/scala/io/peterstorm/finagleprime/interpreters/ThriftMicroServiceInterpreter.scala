@@ -1,24 +1,21 @@
 package finagleprime.interpreters
 
-import finagleprime.thrift._
-import finagleprime.algebras.PrimeAlgebra
-import finagleprime.effects.NaturalTransformation
 import com.twitter.finagle.thrift.service.ThriftResponseClassifier
 import com.twitter.finagle._
 import com.twitter.util.Future
 import cats.effect._
 import cats.syntax.all._
+
 import finagleprime.effects.ThriftClientBuilder
+import finagleprime.thrift._
+import finagleprime.algebras.PrimeAlgebra
+import finagleprime.effects.NaturalTransformation
 
 class ThriftMicroServiceInterpreter[F[_]: Sync: Async](implicit NT: NaturalTransformation[Future, F]) extends PrimeAlgebra[F, scala.Int] {
 
-  private val client: F[ThriftPrimeService.MethodPerEndpoint] = 
-    ThriftClientBuilder[F](Thrift.client)
-      .withResponseClassifier(ThriftResponseClassifier.ThriftExceptionsAsFailures)
-      .build[ThriftPrimeService.MethodPerEndpoint]("localhost:3005", "prime_service")
-
   private val resourceClient: Resource[F, ThriftPrimeService.MethodPerEndpoint] =
     ThriftClientBuilder[F](Thrift.client)
+      .withResponseClassifier(ThriftResponseClassifier.ThriftExceptionsAsFailures)
       .resource[ThriftPrimeService.MethodPerEndpoint]("localhost:3005", "prime_service1")
 
   def calculatePrime(int: Int): F[Int] =
