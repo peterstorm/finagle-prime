@@ -18,3 +18,9 @@ After some research, I have decided to try and implement it the following way:
   - algebra should be polymorphic in the return type and effect, to open the door for different implementations and backends
 - possibly add an eDSL to construct thrift client and servers.
 
+### Documentation and guides used:
+
+- https://diwakergupta.github.io/thrift-missing-guide/
+- https://twitter.github.io/scrooge/index.html
+- https://twitter.github.io/finagle/guide/index.html
+- https://engineering.creditkarma.com/how-to-make-your-finagle-services-resilient
