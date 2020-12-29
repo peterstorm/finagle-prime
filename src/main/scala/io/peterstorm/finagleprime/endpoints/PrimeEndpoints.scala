@@ -55,17 +55,17 @@ final class PrimeEndpoints[F[_]: Concurrent: Sync, A](service: PrimeService[F, A
   def streamSinglePrime(i: Int): F[Stream[F, Byte]] =
     service
       .calculatePrime(i)
-      .map(s => s.map(_.toString).intersperse(", ").through(text.utf8Encode))
+      .map(s => s.map(_.toString).intersperse(",").through(text.utf8Encode))
 
   def streamList(i: Int): F[Stream[F, Byte]] =
     service
       .calculatePrimeList(i)
-      .map(s => s.map(_.toString).intersperse(", ").through(text.utf8Encode))
+      .map(s => s.map(_.toString).intersperse(",").through(text.utf8Encode))
 
   def streamPar(i: Int): F[Stream[F, Byte]] =
     service
-      .calculatePrimePar(i, 20)
-      .map(s => s.map(_.toString).intersperse(", ").through(text.utf8Encode))
+      .calculatePrimePar(i, 5)
+      .map(s => s.map(_.toString).intersperse(",").through(text.utf8Encode))
 
   def streamPar2(i: Int): Stream[F, Byte] =
     service

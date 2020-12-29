@@ -11,15 +11,14 @@ import com.twitter.util.Future
 import com.olegpy.meow.hierarchy._
 
 import finagleprime.domain.Errors._
-import finagleprime.effects.HttpErrorHandler
-import finagleprime.effects.PrimeHttpErrorHandler
+import finagleprime.effects.{PrimeHttpErrorHandler, HttpErrorHandler, NaturalTransformation}
 import finagleprime.algebras.PrimeAlgebra
 import finagleprime.services.PrimeService
 import finagleprime.endpoints.PrimeEndpoints
 import finagleprime.interpreters._
 import finagleprime.thrift._
 
-class Module[F[_]: Applicative: Concurrent: Sync] {
+class Module[F[_]: Applicative: Concurrent: Sync](implicit NT: NaturalTransformation[Lambda[A => F[Future[A]]], F]) {
 
   private val primeServiceNoMS: PrimeService[F, Int] = new PrimeService(new NoMicroserviceInterpreter)
 
@@ -33,7 +32,7 @@ class Module[F[_]: Applicative: Concurrent: Sync] {
 
   private val endpointsThriftFunctional: HttpRoutes[F] = new PrimeEndpoints(primeServiceThrift).endpointsThriftFunctional
 
-  private val endpoints = endpointsNoMs <+> endpointsThriftNaive <+> endpointsThriftFunctional
+  val endpoints = endpointsNoMs <+> endpointsThriftNaive <+> endpointsThriftFunctional
 
   def routeHandler(implicit RH: HttpErrorHandler[F, PrimeError]): HttpRoutes[F] =
     RH.handle(endpoints)

@@ -7,6 +7,8 @@ lazy val FinalgeVersion       = "20.12.0"
 lazy val CirceVersion         = "0.13.0"
 lazy val LogbackVersion       = "1.2.3" 
 lazy val KindProjectorVersion = "0.11.0"
+lazy val ScalaTestVersion     = "3.2.2"
+lazy val ScalaCheckVersion    = "1.14.1"
 
 lazy val root = (project in file("."))
   .settings(
@@ -29,6 +31,9 @@ lazy val root = (project in file("."))
       "com.twitter"       %% "finagle-core"        % FinalgeVersion,
       "com.twitter"       %% "finagle-thrift"      % FinalgeVersion,
       "ch.qos.logback"    %  "logback-classic"     % LogbackVersion,
+      "org.scalatest"     %% "scalatest"           % ScalaTestVersion  % "test",
+      "org.scalacheck"    %% "scalacheck"          % ScalaCheckVersion % "test",
+      "org.scalatestplus" %% "scalacheck-1-14"     % "3.2.2.0" % "test",
       "org.apache.thrift" % "libthrift"            % "0.10.0"
     )
   )

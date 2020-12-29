@@ -1,4 +1,4 @@
-package io.peterstorm.finagleprime
+package finagleprime
 
 import cats.effect.IO
 

@@ -1,4 +1,4 @@
-package io.peterstorm.finagleprime.http
+package finagleprime.http
 
 import cats.effect.IO
 import org.http4s.EntityBody
