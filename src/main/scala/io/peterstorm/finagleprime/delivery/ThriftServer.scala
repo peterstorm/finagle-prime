@@ -9,7 +9,7 @@ import finagleprime.thrift._
 
 object  ThriftServer {
 
-  def create[F[_]: Concurrent](implicit NT: NaturalTransformation[Future, F]) = 
+  def create[F[_]: Concurrent](implicit NT: NaturalTransformation[Lambda[A => F[Future[A]]], F]) =
     Resource.make { 
       Concurrent[F].delay {
         Thrift.server.serveIface("localhost:3005", new ThriftPrimeService.MethodPerEndpoint {
@@ -36,6 +36,6 @@ object  ThriftServer {
           }
         })
       } 
-    }(server => Concurrent[F].delay(NT(server.close())))
+    }(server => NT(Concurrent[F].delay(server.close())))
 
 }

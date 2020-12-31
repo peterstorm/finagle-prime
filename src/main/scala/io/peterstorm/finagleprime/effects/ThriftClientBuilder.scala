@@ -23,7 +23,7 @@ import com.twitter.finagle.liveness.FailureAccrualPolicy
 object ThriftClientBuilder {
 
   def apply[F[_]: Sync: Async](client: Client)(implicit NT: NaturalTransformation[Lambda[A => F[Future[A]]], F])=
-    new ThriftClientBuilder[F](client.pure[F])
+    new ThriftClientBuilder[F](Sync[F].delay(client))
 
 }
 
