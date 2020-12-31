@@ -18,13 +18,13 @@ import finagleprime.endpoints.PrimeEndpoints
 import finagleprime.interpreters._
 import finagleprime.thrift._
 
-class Module[F[_]: Applicative: Concurrent: Sync](implicit NT: NaturalTransformation[Lambda[A => F[Future[A]]], F]) {
+class Module[F[_]: Applicative: Concurrent: Sync](client: ThriftPrimeService.MethodPerEndpoint)(implicit NT: NaturalTransformation[Lambda[A => F[Future[A]]], F]) {
 
   private val primeServiceNoMS: PrimeService[F, Int] = new PrimeService(new NoMicroserviceInterpreter)
 
   private val primeServiceThriftNaive: PrimeService[F, Int] = new PrimeService(new ThriftMicroServiceInterpreterNaive)
 
-  private val primeServiceThrift: PrimeService[F, Int] = new PrimeService(new ThriftMicroServiceInterpreter)
+  private val primeServiceThrift: PrimeService[F, Int] = new PrimeService(new ThriftMicroServiceInterpreter(client))
 
   private val endpointsNoMs: HttpRoutes[F] = new PrimeEndpoints(primeServiceNoMS).endpointsNoMS
 

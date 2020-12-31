@@ -6,14 +6,15 @@ import com.twitter.finagle.Thrift
 
 import finagleprime.delivery.Server
 import finagleprime.delivery.ThriftServer
+import finagleprime.delivery.ThriftClient
 
 object Main extends IOApp {
 
-  val ctx = new Module[IO]
-
   private val program: Stream[IO, Unit] =
     for {
-      _ <- Stream.resource(Server.create(ctx.httpApp))
+      client <- Stream.resource(ThriftClient.create[IO])
+      module = new Module[IO](client)
+      _ <- Stream.resource(Server.create(module.httpApp))
       _ <- Stream.resource(ThriftServer.create[IO])
       _ <- Stream.eval(IO(println("Server started")))
       _ <- Stream.never[IO].covaryOutput[Unit]

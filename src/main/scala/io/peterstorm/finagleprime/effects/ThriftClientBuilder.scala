@@ -23,7 +23,7 @@ import com.twitter.finagle.liveness.FailureAccrualPolicy
 object ThriftClientBuilder {
 
   def apply[F[_]: Sync: Async](client: Client)(implicit NT: NaturalTransformation[Lambda[A => F[Future[A]]], F])=
-    new ThriftClientBuilder[F](Sync[F].delay(client))
+    new ThriftClientBuilder[F](client.pure[F])
 
 }
 
@@ -38,6 +38,9 @@ final private[finagleprime] case class ThriftClientBuilder[F[_]: Sync: Async](pr
           Backoff.decorrelatedJittered(
             Duration(start, TimeUnit.SECONDS), Duration(maximum, TimeUnit.SECONDS))))
         )
+
+    def withConfig(f: Client => Client): ThriftClientBuilder[F] =
+      copy(client = client.map(f))
 
     def withRetryBudget(ttl: Long, minRetries: Int, retryPercent: Double): ThriftClientBuilder[F] =
       copy(client = client.map(_.withRetryBudget(RetryBudget(Duration(ttl, TimeUnit.SECONDS), minRetries, retryPercent))))
@@ -60,13 +63,13 @@ final private[finagleprime] case class ThriftClientBuilder[F[_]: Sync: Async](pr
     def filtered(filter: Filter[ThriftClientRequest, Array[Byte], ThriftClientRequest, Array[Byte]]): ThriftClientBuilder[F] =
       copy(client = client.map(_.filtered(filter)))
 
-    def build[Srv <: ToClosable: ClassTag](destination: String, label: String): F[Srv] =
+    def build[Srv: ClassTag](destination: String, label: String): F[Srv] =
       client.map(_.build[Srv](destination, label))
 
     def resource[Srv <: ToClosable: ClassTag](destination: String, label: String): Resource[F, Srv] =
       makeResource(client.map(_.build[Srv](destination, label)))
 
     private def makeResource[Srv <: ToClosable: ClassTag](service: F[Srv]): Resource[F, Srv] =
-      Resource.make(service)(service => NT(Sync[F].delay(service.asClosable.close(Duration(1, TimeUnit.SECONDS)))))
+      Resource.make(service)(service => NT(Sync[F].delay(service.asClosable.close)))
 
 }
