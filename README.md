@@ -24,7 +24,7 @@ I know there are probably too many folders, for such a small project, but I like
 - [algebras](https://github.com/peterstorm/finagle-prime/tree/master/src/main/scala/io/peterstorm/finagleprime/algebras). `PrimeAlgebra`, which is the trait/typeclass we base the whole project on.
 - [delivery](https://github.com/peterstorm/finagle-prime/tree/master/src/main/scala/io/peterstorm/finagleprime/delivery).  Creation of the `ThriftServer`, `ThriftClient` and http `Server`.
 - [domain](https://github.com/peterstorm/finagle-prime/tree/master/src/main/scala/io/peterstorm/finagleprime/domain). `PrimeError` sum type, which we use to raise business errors with. In a more complicated app, I would have subfolders, haha :D
-- [effects](https://github.com/peterstorm/finagle-prime/tree/master/src/main/scala/io/peterstorm/finagleprime/effects). In here you'll find the simple `ThriftClientBuilder`, some typeclasses for converting between Twitter Future and our generic `F` (`FutureConversion`, which is not used, and `NaturalTransformation`. The `HttpErrorErrorHandler` that is a middlewhere for our API, that can "catch" any business errors we have raised in our code. And a failed attempt at a `LogginFilter`, which I did't get to work, because I went with the `MethodPerEndpoint` API, and not the `ServicePerEndpoint` API.
+- [effects](https://github.com/peterstorm/finagle-prime/tree/master/src/main/scala/io/peterstorm/finagleprime/effects). In here you'll find the simple `ThriftClientBuilder`, some typeclasses for converting between Twitter Future and our generic `F` (`FutureConversion`, which is not used, and `NaturalTransformation`). The `HttpErrorErrorHandler` that is a middlewhere for our API, that can "catch" any business errors we have raised in our code. And a failed attempt at a `LogginFilter`, which I did't get to work, because I went with the `MethodPerEndpoint` API, and not the `ServicePerEndpoint` API.
 - [endpoints](https://github.com/peterstorm/finagle-prime/tree/master/src/main/scala/io/peterstorm/finagleprime/endpoints). The routes for the API, `PrimeEndpoints`.
 - [interpreters](https://github.com/peterstorm/finagle-prime/tree/master/src/main/scala/io/peterstorm/finagleprime/interpreters). Our three interpreters of the `PrimeAlgebra`. A `NoMicroserviceInterpreter` that is pure. A `ThriftMicroServiceInterpreterNaive` that does not comply to the functional paradigme. And `ThriftMicroServiceInterpreter` that goes all functional.
 - [services](https://github.com/peterstorm/finagle-prime/tree/master/src/main/scala/io/peterstorm/finagleprime/services). The `PrimeService` that uses the various implenentations of the `PrimeAlgebra`. Is then used in the `PrimeEndpoints` to deliver the prime numbers.
@@ -40,7 +40,6 @@ sbt-finagle-prime> run
 
 If not, it's compiled on JDK 11, and you need `sbt`
 ```
-> nix-shell
 > sbt
 sbt-finagle-prime> run
 ```
