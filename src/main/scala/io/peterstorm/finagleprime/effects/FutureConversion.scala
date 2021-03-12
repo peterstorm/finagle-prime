@@ -19,10 +19,10 @@ object FutureConversion {
     def futureToF[A](fa: F[Future[A]]): F[A] = {
       fa.flatMap{ fu => 
         Bracket[F, Throwable].guarantee {
-          Async[F].async[A] { cont => 
+          Async[F].async[A] { cb => 
             fu.respond { 
-              case Return(a) => cont(Right[Throwable, A](a)) 
-              case Throw(err) => cont(Left[Throwable, A](err))
+              case Return(a) => cb(Right[Throwable, A](a)) 
+              case Throw(err) => cb(Left[Throwable, A](err))
             }
           }
         }(ContextShift[F].shift)

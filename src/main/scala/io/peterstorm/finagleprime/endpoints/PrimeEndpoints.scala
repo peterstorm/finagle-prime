@@ -5,6 +5,7 @@ import org.http4s.dsl._
 import fs2._
 import cats.implicits._
 import cats.effect.{Sync, Concurrent}
+import cats.data.EitherT
 
 import finagleprime.services.PrimeService
 import finagleprime.domain.Errors._
@@ -64,15 +65,13 @@ final class PrimeEndpoints[F[_]: Concurrent: Sync, A](service: PrimeService[F, A
 
   def streamPar(i: Int): F[Stream[F, Byte]] =
     service
-      .calculatePrimePar(i, 5)
+      .calculatePrimePar(i, 3)
       .map(s => s.map(_.toString).intersperse(",").through(text.utf8Encode))
 
   def streamPar2(i: Int): Stream[F, Byte] =
     service
       .calculatePrimePar2(i, 3)
       .map(_.toString)
-      .intersperse("\n")
+      .intersperse(",")
       .through(text.utf8Encode)
-
-
 }

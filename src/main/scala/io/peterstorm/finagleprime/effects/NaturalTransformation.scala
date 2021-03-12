@@ -11,10 +11,10 @@ object NaturalTransformation {
 
   implicit def tFutureToF[H[_]: Async]: NaturalTransformation[Future, H] = 
     new NaturalTransformation[Future,  H] { 
-      def apply[A](future: Future[A]): H[A] = Async[H].async { cont =>
+      def apply[A](future: Future[A]): H[A] = Async[H].async { cb =>
         future.respond {
-          case Return(a)    => cont(Right[Throwable, A](a))
-          case Throw(error) => cont(Left[Throwable, A](error))
+          case Return(a)    => cb(Right[Throwable, A](a))
+          case Throw(error) => cb(Left[Throwable, A](error))
         }
       }
   }
@@ -24,10 +24,10 @@ object NaturalTransformation {
       def apply[A](fa: H[Future[A]]): H[A] = {
             fa.flatMap{ fu => 
               Bracket[H, Throwable].guarantee {
-                Async[H].async[A] { cont => 
+                Async[H].async[A] { cb => 
                   fu.respond { 
-                    case Return(a) => cont(Right[Throwable, A](a)) 
-                    case Throw(err) => cont(Left[Throwable, A](err))
+                    case Return(a) => cb(Right[Throwable, A](a)) 
+                    case Throw(err) => cb(Left[Throwable, A](err))
                   }
                 }
               }(ContextShift[H].shift)

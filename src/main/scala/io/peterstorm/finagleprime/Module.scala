@@ -1,22 +1,21 @@
 package finagleprime
 
-import org.http4s.{HttpRoutes, HttpApp}
-import org.http4s.implicits._
-import org.http4s.server.Router
 import cats.Applicative
-import cats.syntax.all._
 import cats.effect.{Concurrent, Sync}
+import cats.syntax.all._
+import com.olegpy.meow.hierarchy._
 import com.twitter.finagle.Thrift
 import com.twitter.util.Future
-import com.olegpy.meow.hierarchy._
-
-import finagleprime.domain.Errors._
-import finagleprime.effects.{PrimeHttpErrorHandler, HttpErrorHandler, NaturalTransformation}
 import finagleprime.algebras.PrimeAlgebra
-import finagleprime.services.PrimeService
+import finagleprime.domain.Errors._
+import finagleprime.effects.{HttpErrorHandler, NaturalTransformation, PrimeHttpErrorHandler}
 import finagleprime.endpoints.PrimeEndpoints
 import finagleprime.interpreters._
+import finagleprime.services.PrimeService
 import finagleprime.thrift._
+import org.http4s.implicits._
+import org.http4s.server.Router
+import org.http4s.{HttpApp, HttpRoutes}
 
 class Module[F[_]: Applicative: Concurrent: Sync](client: ThriftPrimeService.MethodPerEndpoint)(implicit NT: NaturalTransformation[Lambda[A => F[Future[A]]], F]) {
 
